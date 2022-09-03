@@ -1,9 +1,9 @@
 module Internal.Model2 exposing (..)
 
-import Animator
-import Animator.Timeline
-import Animator.Watcher
-import Browser.Dom
+-- import Animator
+-- import Animator.Timeline
+-- import Animator.Watcher
+-- import Browser.Dom
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
@@ -17,7 +17,7 @@ import Json.Decode as Json
 import Json.Encode
 import Set exposing (Set)
 import Task
-import Time
+-- import Time
 import VirtualDom
 
 
@@ -49,8 +49,8 @@ map fn el =
 mapUIMsg : (a -> b) -> Msg a -> Msg b
 mapUIMsg fn msg =
     case msg of
-        Tick time ->
-            Tick time
+        -- Tick time ->
+        --     Tick time
 
         RuleNew str ->
             RuleNew str
@@ -64,33 +64,33 @@ mapUIMsg fn msg =
         RefreshBoxesAndThen externalMsg ->
             RefreshBoxesAndThen (fn externalMsg)
 
-        AnimationAdd trigger css ->
-            AnimationAdd trigger css
+        -- AnimationAdd trigger css ->
+        --     AnimationAdd trigger css
 
-        Animate maybeBox trigger classString props ->
-            Animate maybeBox trigger classString props
+        -- Animate maybeBox trigger classString props ->
+        --     Animate maybeBox trigger classString props
 
         BoxesNew externalMsg newBoxes ->
             BoxesNew (fn externalMsg) newBoxes
 
 
 type Msg msg
-    = Tick Time.Posix
-    | RuleNew String
+    -- = Tick Time.Posix
+    = RuleNew String
     | Trans Phase String (List TransitionDetails)
     | BoxNew Id Box
     | RefreshBoxesAndThen msg
     | BoxesNew msg (List ( Id, Box ))
-    | AnimationAdd Trigger Animator.Css
-    | Animate
-        (Maybe
-            { id : Id
-            , box : Box
-            }
-        )
-        Trigger
-        String
-        (List Animated)
+    -- | AnimationAdd Trigger Animator.Css
+    -- | Animate
+    --     (Maybe
+    --         { id : Id
+    --         , box : Box
+    --         }
+    --     )
+    --     Trigger
+    --     String
+    --     (List Animated)
 
 
 type State
@@ -213,49 +213,49 @@ moveAnimation className previous current =
     keyframes ++ classRule
 
 
-type alias Animator msg model =
-    { animator : Animator.Watcher.Watching model
-    , onStateChange : model -> List ( Time.Posix, msg )
-    }
+-- type alias Animator msg model =
+--     { animator : Animator.Watcher.Watching model
+--     , onStateChange : List ( Time.Posix, msg )
+--     }
 
 
-updateWith :
-    (Msg msg -> msg)
-    -> Msg msg
-    -> State
-    ->
-        { ui : State -> model
-        , timelines : Animator msg model
-        }
-    -> ( model, Cmd msg )
-updateWith toAppMsg msg state config =
-    let
-        ( newState, stateCmd ) =
-            update toAppMsg msg state
-    in
-    ( case msg of
-        Tick newTime ->
-            config.ui newState
-                |> Animator.Watcher.update newTime config.timelines.animator
+-- updateWith :
+--     (Msg msg -> msg)
+--     -> Msg msg
+--     -> State
+--     ->
+--         { ui : State -> model
+--         , timelines : Animator msg model
+--         }
+--     -> ( model, Cmd msg )
+-- updateWith toAppMsg msg state config =
+--     let
+--         ( newState, stateCmd ) =
+--             update toAppMsg msg state
+--     in
+--     ( case msg of
+--         Tick newTime ->
+--             config.ui newState
+--                 |> Animator.Watcher.update newTime config.timelines.animator
 
-        _ ->
-            config.ui newState
-    , Cmd.batch
-        [ stateCmd
-        ]
-    )
+--         _ ->
+--             config.ui newState
+--     , Cmd.batch
+--         [ stateCmd
+--         ]
+--     )
 
 
-subscription : (Msg msg -> msg) -> State -> Animator msg model -> model -> Sub msg
-subscription toAppMsg state animator model =
-    Animator.Watcher.toSubscription (toAppMsg << Tick) model animator.animator
+-- subscription : (Msg msg -> msg) -> State -> Animator msg model -> model -> Sub msg
+-- subscription toAppMsg state animator model =
+--     Animator.Watcher.toSubscription (toAppMsg << Tick) model animator.animator
 
 
 update : (Msg msg -> msg) -> Msg msg -> State -> ( State, Cmd msg )
 update toAppMsg msg ((State details) as unchanged) =
     case msg of
-        Tick _ ->
-            ( unchanged, Cmd.none )
+        -- Tick _ ->
+        --     ( unchanged, Cmd.none )
 
         RuleNew new ->
             if Set.member new details.added then
@@ -305,62 +305,62 @@ update toAppMsg msg ((State details) as unchanged) =
                     , Cmd.none
                     )
 
-        AnimationAdd trigger css ->
-            let
-                _ =
-                    Debug.log "CSS " css
-            in
-            if Set.member css.hash details.added then
-                ( unchanged, Cmd.none )
+        -- AnimationAdd trigger css ->
+        --     let
+        --         _ =
+        --             Debug.log "CSS " css
+        --     in
+        --     if Set.member css.hash details.added then
+        --         ( unchanged, Cmd.none )
 
-            else
-                let
-                    newClass =
-                        ("." ++ css.hash ++ phaseName trigger ++ phasePseudoClass trigger ++ " {")
-                            ++ renderProps css.props ""
-                            ++ "}"
-                in
-                ( State
-                    { rules = css.keyframes :: newClass :: details.rules
-                    , added = Set.insert css.hash details.added
-                    , boxes = details.boxes
-                    }
-                , Cmd.none
-                )
+        --     else
+        --         let
+        --             newClass =
+        --                 ("." ++ css.hash ++ phaseName trigger ++ phasePseudoClass trigger ++ " {")
+        --                     ++ renderProps css.props ""
+        --                     ++ "}"
+        --         in
+        --         ( State
+        --             { rules = css.keyframes :: newClass :: details.rules
+        --             , added = Set.insert css.hash details.added
+        --             , boxes = details.boxes
+        --             }
+        --         , Cmd.none
+        --         )
 
-        Animate maybeId trigger classString props ->
-            if Set.member classString details.added then
-                ( unchanged, Cmd.none )
+        -- Animate maybeId trigger classString props ->
+        --     if Set.member classString details.added then
+        --         ( unchanged, Cmd.none )
 
-            else
-                let
-                    arrivingTransitionStr =
-                        transitionFor .arriving False props
+        --     else
+        --         let
+        --             arrivingTransitionStr =
+        --                 transitionFor .arriving False props
 
-                    departingTransitionStr =
-                        transitionFor .departing False props
+        --             departingTransitionStr =
+        --                 transitionFor .departing False props
 
-                    stylesStr =
-                        renderTargetAnimatedStyle Nothing props
+        --             stylesStr =
+        --                 renderTargetAnimatedStyle Nothing props
 
-                    new =
-                        ("." ++ classString ++ phasePseudoClass trigger ++ " {")
-                            ++ ("transition:" ++ arrivingTransitionStr ++ ";\n")
-                            ++ stylesStr
-                            ++ "}"
+        --             new =
+        --                 ("." ++ classString ++ phasePseudoClass trigger ++ " {")
+        --                     ++ ("transition:" ++ arrivingTransitionStr ++ ";\n")
+        --                     ++ stylesStr
+        --                     ++ "}"
 
-                    newReturn =
-                        ("." ++ classString ++ " {")
-                            ++ ("transition:" ++ departingTransitionStr ++ ";")
-                            ++ "}"
-                in
-                ( State
-                    { rules = new :: newReturn :: details.rules
-                    , added = Set.insert classString details.added
-                    , boxes = details.boxes
-                    }
-                , Cmd.none
-                )
+        --             newReturn =
+        --                 ("." ++ classString ++ " {")
+        --                     ++ ("transition:" ++ departingTransitionStr ++ ";")
+        --                     ++ "}"
+        --         in
+        --         ( State
+        --             { rules = new :: newReturn :: details.rules
+        --             , added = Set.insert classString details.added
+        --             , boxes = details.boxes
+        --             }
+        --         , Cmd.none
+        --         )
 
         Trans phase classStr transition ->
             if Set.member classStr details.added then
@@ -437,21 +437,22 @@ requestBoundingBoxesHelper boxes task =
             task
 
         ( topId, topBox ) :: remaining ->
-            let
-                newTask =
-                    task
-                        |> Task.andThen
-                            (\list ->
-                                Browser.Dom.getElement (toCssId topId)
-                                    |> Task.map
-                                        (\newBox ->
-                                            ( topId, newBox.element ) :: list
-                                        )
-                                    |> Task.onError
-                                        (\_ -> Task.succeed list)
-                            )
-            in
-            requestBoundingBoxesHelper remaining newTask
+            -- let
+            --     newTask =
+            --         task
+            --             |> Task.andThen
+            --                 (\list ->
+            --                     Browser.Dom.getElement (toCssId topId)
+            --                         |> Task.map
+            --                             (\newBox ->
+            --                                 ( topId, newBox.element ) :: list
+            --                             )
+            --                         |> Task.onError
+            --                             (\_ -> Task.succeed list)
+            --                 )
+            -- in
+            -- requestBoundingBoxesHelper remaining newTask
+            task
 
 
 type alias Transform =
@@ -955,7 +956,7 @@ type Attr msg
     | Transition2
         { toMsg : Msg msg -> msg
         , trigger : Trigger
-        , css : Animator.Css
+        , css : () -- Animator.Css
         }
     | Animated (Msg msg -> msg) Id
 
@@ -2219,19 +2220,20 @@ renderAttrs parentBits myBits layout details children has htmlAttrs classes attr
                                 triggerName trigger
 
                             styleClass =
-                                css.hash ++ phaseName trigger
+                                -- css.hash ++ phaseName trigger
+                                phaseName trigger
 
                             event =
                                 Json.field "animationName" Json.string
                                     |> Json.andThen
                                         (\name ->
-                                            if name == triggerClass then
-                                                Json.succeed
-                                                    (toMsg
-                                                        (AnimationAdd trigger css)
-                                                    )
+                                            -- if name == triggerClass then
+                                            --     Json.succeed
+                                            --         (toMsg
+                                            --             (AnimationAdd trigger css)
+                                            --         )
 
-                                            else
+                                            -- else
                                                 Json.fail "Nonmatching animation"
                                         )
                         in

@@ -208,9 +208,9 @@ This is very useful for things like dropdown menus or tooltips.
 
 -}
 
-import Animator
-import Animator.Timeline
-import Animator.Watcher
+-- import Animator
+-- import Animator.Timeline
+-- import Animator.Watcher
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Event
